@@ -25,7 +25,7 @@ client.on("messageCreate", (msg) => {
           return core
             .getAll(value)
             .then((data) => {
-              msg.reply(
+              msg.channel.send(
                 `Salut <@${
                   msg.author.id
                 }>, je vois que tu anticipes déjà petit malin ^^ 😉  \n ${data.join(
@@ -34,13 +34,13 @@ client.on("messageCreate", (msg) => {
               );
             })
             .catch(() => {
-              msg.reply("Désolé, je ne trouve pas l'information");
+              msg.channel.send("Désolé, je ne trouve pas l'information");
             });
         case "-all":
           return core
             .getAll()
             .then((data) => {
-              msg.reply(
+              msg.channel.send(
                 `Salut <@${
                   msg.author.id
                 }>, je vois que tu as besoin de repos ^^ 😉 \n ${data.join(
@@ -49,7 +49,7 @@ client.on("messageCreate", (msg) => {
               );
             })
             .catch(() => {
-              msg.reply("Désolé, je ne trouve pas l'information");
+              msg.channel.send("Désolé, je ne trouve pas l'information");
             });
         default:
           break;
@@ -58,10 +58,10 @@ client.on("messageCreate", (msg) => {
     return core
       .getNext()
       .then((data) => {
-        msg.reply(data);
+        msg.channel.send(data);
       })
       .catch(() => {
-        msg.reply("Désolé, je ne trouve pas l'information");
+        msg.channel.send("Désolé, je ne trouve pas l'information");
       });
   }
 });
