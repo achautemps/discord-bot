@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
-import core from "./core.js";
+import jourferie from "./jourferie.js";
 const token = process.env.BOT_TOKEN;
 
 // Create a new client instance
@@ -22,7 +22,7 @@ client.on("messageCreate", (msg) => {
     if (param) {
       switch (param) {
         case "-year":
-          return core
+          return jourferie
             .getAll(value)
             .then((data) => {
               msg.channel.send(
@@ -37,7 +37,7 @@ client.on("messageCreate", (msg) => {
               msg.channel.send("Désolé, je ne trouve pas l'information");
             });
         case "-all":
-          return core
+          return jourferie
             .getAll()
             .then((data) => {
               msg.channel.send(
@@ -55,7 +55,7 @@ client.on("messageCreate", (msg) => {
           break;
       }
     }
-    return core
+    return jourferie
       .getNext()
       .then((data) => {
         msg.channel.send(data);

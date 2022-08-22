@@ -1,7 +1,7 @@
 import axios from "axios";
 const API_URL = "https://calendrier.api.gouv.fr/jours-feries/metropole";
 
-class Core {
+class Jourferie {
   constructor() {
     this.state = {
       isNextFounded: false,
@@ -50,13 +50,13 @@ class Core {
   }
   getDay(date) {
     const days = [
+      "Dimanche",
       "Lundi",
       "Mardi",
       "Mercredi",
       "Jeudi",
       "Vendredi",
       "Samedi",
-      "Dimanche",
     ];
     return days[date.getDay()];
   }
@@ -107,4 +107,4 @@ class Core {
     }
   }
 }
-export default new Core()
+export default new Jourferie()
