@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
 import jourferie from "./jourferie.js";
+import formula1 from './formula1.js';
 const token = process.env.BOT_TOKEN;
 
 // Create a new client instance
@@ -63,6 +64,11 @@ client.on("messageCreate", (msg) => {
       .catch(() => {
         msg.channel.send("Désolé, je ne trouve pas l'information");
       });
+  }
+  if (msg.content.includes("!raceweek")) {
+    return formula1.isRaceWeek().then( data => {
+      msg.channel.send(data)
+    })
   }
 });
 
