@@ -1,5 +1,6 @@
 import axios from "axios";
 import { parseString } from "xml2js";
+import { getDayNumberBetweenTwoDates } from "./helper/date.js";
 const API_URL = "http://ergast.com/api/f1/current";
 
 async function xml2json(xml) {
@@ -38,6 +39,7 @@ class Formula1 {
         59
       );
       let text = "";
+      let next = "";
       data.MRData.RaceTable[0].Race.forEach((race) => {
         const date = new Date(race.Date[0]);
         if (
@@ -47,9 +49,15 @@ class Formula1 {
           console.log(race.RaceName[0]);
           text = `Oui mon pote, c'est bien une race week ! C'est le **${race.RaceName[0]}** ce week-end`;
         }
+        if (next === "" && date.getTime() > today.getTime()) {
+          next = `**@${race.RaceName[0]}** dans **${getDayNumberBetweenTwoDates(
+            today,
+            date
+          )}** jours`;
+        }
       });
       if (text === "") {
-        text = "Et non ! Déso mon pote mais ce n'est pas une race week";
+        text = `Et non ! Désolé mon pote mais ce n'est pas une race week ! Mais rassure-toi le prochain GP est le ${next}`;
       }
       return text;
     } catch (error) {

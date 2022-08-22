@@ -1,6 +1,6 @@
 import axios from "axios";
 const API_URL = "https://calendrier.api.gouv.fr/jours-feries/metropole";
-
+import { getDay, getMonth } from './helper/date.js';
 class Jourferie {
   constructor() {
     this.state = {
@@ -31,37 +31,9 @@ class Jourferie {
     }
     return "";
   }
-  getMonth(date) {
-    const months = [
-      "janvier",
-      "fevrier",
-      "mars",
-      "avril",
-      "mai",
-      "juin",
-      "juillet",
-      "août",
-      "septembre",
-      "octobre",
-      "novembre",
-      "décembre",
-    ];
-    return months[date.getMonth()];
-  }
-  getDay(date) {
-    const days = [
-      "Dimanche",
-      "Lundi",
-      "Mardi",
-      "Mercredi",
-      "Jeudi",
-      "Vendredi",
-      "Samedi",
-    ];
-    return days[date.getDay()];
-  }
+
   parseDate(date) {
-    return `${this.getDay(date)} ${date.getDate()} ${this.getMonth(
+    return `${getDay(date)} ${date.getDate()} ${getMonth(
       date
     )} ${date.getFullYear()}${this.getStatus(date)}`;
   }
