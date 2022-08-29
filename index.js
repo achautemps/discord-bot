@@ -1,8 +1,11 @@
 import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
 import jourferie from "./jourferie.js";
-import formula1 from './formula1.js';
+import formula1 from "./formula1.js";
+import { isAnagram } from "./helper/string.js";
+// eslint-disable-next-line no-undef
 const token = process.env.BOT_TOKEN;
+const cmdRaceWeek = "!raceweek";
 
 // Create a new client instance
 const client = new Client({
@@ -19,7 +22,7 @@ client.once("ready", () => {
 client.on("messageCreate", (msg) => {
   if (msg.author.bot) return;
   if (msg.content.includes("!jourferie")) {
-    const [cmd, param, value] = msg.content.split(" ");
+    const [, param, value] = msg.content.split(" ");
     if (param) {
       switch (param) {
         case "-year":
@@ -65,10 +68,10 @@ client.on("messageCreate", (msg) => {
         msg.channel.send("Désolé, je ne trouve pas l'information");
       });
   }
-  if (msg.content.includes("!raceweek")) {
-    return formula1.isRaceWeek().then( data => {
-      msg.channel.send(data)
-    })
+  if (isAnagram(msg.content, cmdRaceWeek)) {
+    return formula1.isRaceWeek().then((data) => {
+      msg.channel.send(data);
+    });
   }
 });
 
