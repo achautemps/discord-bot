@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Client, GatewayIntentBits } from "discord.js";
 import jourferie from "./jourferie.js";
 import formula1 from "./formula1.js";
+import cafe from './cafe.js'
 import { isAnagram } from "./helper/string.js";
 // eslint-disable-next-line no-undef
 const token = process.env.BOT_TOKEN;
@@ -88,7 +89,14 @@ client.on("messageCreate", (msg) => {
         }>,\nDes va...quoi ?`
       );
     }
-
+  }
+  if (msg.content.includes("!cafe")) {
+    const [, param] = msg.content.split(" ");
+    if(param === '-start'){
+      msg.channel.send(cafe.start());
+    } else if (param === '-stop'){
+      msg.channel.send(cafe.stop());
+    }
   }
 });
 

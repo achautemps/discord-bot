@@ -30,3 +30,8 @@ export function getDay(date) {
 export function getDayNumberBetweenTwoDates(dateStart, dateEnd) {
   return (dateEnd.getTime() - dateStart.getTime()) / (1000 * 3600 * 24);
 }
+export function getMinutesFromMillis(duration) {
+  var minutes = Math.floor(duration / 60000);
+  var seconds = ((duration % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
