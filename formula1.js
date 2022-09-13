@@ -46,7 +46,6 @@ class Formula1 {
           date.getTime() > today.getTime() &&
           date.getTime() <= sunday.getTime()
         ) {
-          console.log(race.RaceName[0]);
           text = `Oui mon pote, c'est bien une race week ! C'est le **${race.RaceName[0]}** ce week-end`;
         }
         if (next === "" && date.getTime() > today.getTime()) {

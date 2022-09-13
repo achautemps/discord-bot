@@ -73,6 +73,23 @@ client.on("messageCreate", (msg) => {
       msg.channel.send(data);
     });
   }
+  if (msg.content.includes("!vacances")) {
+    const [, param] = msg.content.split(" ");
+    if(param === '-clement'){
+      msg.channel.send(
+        `Salut <@${
+          msg.author.id
+        }>,\nLes prochaines vacances de Clément sont prévues pour la semaine prochaine`
+      );
+    } else {
+      msg.channel.send(
+        `Salut <@${
+          msg.author.id
+        }>,\nDes va...quoi ?`
+      );
+    }
+
+  }
 });
 
 client.login(token).catch((err) => console.log(err));
