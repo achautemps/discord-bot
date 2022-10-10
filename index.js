@@ -5,6 +5,7 @@ import JourFerieCommand from "./commands/jourferie.js";
 import CafeCommand from "./commands/cafe.js";
 import RaceWeekCommand from "./commands/raceweek.js";
 import VacancesCommand from "./commands/vacances.js";
+import djCommand from "./commands/dj.js"
 //core
 import jourferie from "./core/jourferie.js";
 import cafe from "./core/cafe.js";
@@ -87,11 +88,16 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.deferReply()
     const data = await vacances.getDateByName(name.toLowerCase())
     await interaction.editReply(data);
+  } else if (commandName === "fredboat"){
+    const subcommand = options.getSubcommand();
+    if(subcommand === 'play'){
+      interaction.reply("Ce n'est pas encore fini de dev mais ça arrive !")
+    }
   }
 });
 
 async function main() {
-  const commands = [JourFerieCommand, CafeCommand, RaceWeekCommand, VacancesCommand];
+  const commands = [JourFerieCommand, CafeCommand, RaceWeekCommand, VacancesCommand, djCommand];
   try {
     console.log("Started refreshing application (/) commands.");
     await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
