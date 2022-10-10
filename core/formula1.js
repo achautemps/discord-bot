@@ -1,6 +1,6 @@
 import axios from "axios";
 import { parseString } from "xml2js";
-import { getDayNumberBetweenTwoDates } from "./helper/date.js";
+import { getDayNumberBetweenTwoDates } from "../helper/date.js";
 const API_URL = "http://ergast.com/api/f1/current";
 
 async function xml2json(xml) {

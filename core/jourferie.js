@@ -1,6 +1,6 @@
 import axios from "axios";
 const API_URL = "https://calendrier.api.gouv.fr/jours-feries/metropole";
-import { getDay, getMonth } from './helper/date.js';
+import { getDay, getMonth } from '../helper/date.js';
 class Jourferie {
   constructor() {
     this.state = {

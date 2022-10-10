@@ -1,5 +1,7 @@
-import { getMinutesFromMillis } from "./helper/date.js";
-
+import { getMinutesFromMillis } from "../helper/date.js";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const { users } = require("../config.json");
 class Cafe {
   constructor() {
     this.state = {
@@ -9,8 +11,8 @@ class Cafe {
     };
   }
   estimate() {
-    const min = 240000
-    const max = 2400000
+    const min = 240000;
+    const max = 2400000;
 
     this.state = {
       ...this.state,
@@ -23,9 +25,9 @@ class Cafe {
       dateStart: new Date(),
     };
     this.estimate();
-    return `L'Estimation du temps de préparation du café de Clément est de : ${getMinutesFromMillis(
-      this.state.estimatedDuration
-    )}`;
+    return `L'Estimation du temps de préparation du café de <@${
+      users.clement.id
+    }> est de : **${getMinutesFromMillis(this.state.estimatedDuration)}**`;
   }
   stop() {
     this.state = {
@@ -38,7 +40,9 @@ class Cafe {
     const time = this.state.dateEnd.getTime() - this.state.dateStart.getTime();
 
     if (time < this.state.estimatedDuration) {
-      return `Bravo à Clément qui a été plus rapide que le temps estimé ! Il a mis **${getMinutesFromMillis(
+      return `Bravo à <@${
+        users.clement.id
+      }> qui a été plus rapide que le temps estimé ! Il a mis **${getMinutesFromMillis(
         time
       )}** pour faire son café. Belle perf !`;
     } else if (time === this.state.estimatedDuration) {
@@ -46,9 +50,9 @@ class Cafe {
         time
       )}** pour faire son café. Magnifique !`;
     } else {
-      return `Je sous-estime la longueur de la pause café de ce bon vieux Clément ! Il a mis **${getMinutesFromMillis(
-        time
-      )}** pour faire son café !`;
+      return `Je sous-estime la longueur de la pause café de ce bon vieux <@${
+        users.clement.id
+      }> ! Il a mis **${getMinutesFromMillis(time)}** pour faire son café !`;
     }
   }
 }

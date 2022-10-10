@@ -1,13 +1,21 @@
 import "dotenv/config";
-import { Client, GatewayIntentBits } from "discord.js";
-import jourferie from "./jourferie.js";
-import formula1 from "./formula1.js";
-import cafe from './cafe.js'
-import { isAnagram } from "./helper/string.js";
-// eslint-disable-next-line no-undef
-const token = process.env.BOT_TOKEN;
-const cmdRaceWeek = "!raceweek";
+import { Client, GatewayIntentBits, REST, Routes } from "discord.js";
+//commands
+import JourFerieCommand from "./commands/jourferie.js";
+import CafeCommand from "./commands/cafe.js";
+import RaceWeekCommand from "./commands/raceweek.js";
+import VacancesCommand from "./commands/vacances.js";
+//core
+import jourferie from "./core/jourferie.js";
+import cafe from "./core/cafe.js";
+import formula1 from "./core/formula1.js";
+import vacances from './core/vacances.js';
 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { TOKEN, GUILD_ID, CLIENT_ID } =  require('./config.json');
+
+const rest = new REST({ version: "10" }).setToken(TOKEN);
 // Create a new client instance
 const client = new Client({
   intents: [
@@ -19,85 +27,80 @@ const client = new Client({
 client.once("ready", () => {
   console.log("Bot ready !");
 });
-
-client.on("messageCreate", (msg) => {
-  if (msg.author.bot) return;
-  if (msg.content.includes("!jourferie")) {
-    const [, param, value] = msg.content.split(" ");
-    if (param) {
-      switch (param) {
-        case "-year":
-          return jourferie
-            .getAll(value)
-            .then((data) => {
-              msg.channel.send(
-                `Salut <@${
-                  msg.author.id
-                }>, je vois que tu anticipes déjà petit malin ^^ 😉  \n ${data.join(
-                  "\n"
-                )}`
-              );
-            })
-            .catch(() => {
-              msg.channel.send("Désolé, je ne trouve pas l'information");
-            });
-        case "-all":
-          return jourferie
-            .getAll()
-            .then((data) => {
-              msg.channel.send(
-                `Salut <@${
-                  msg.author.id
-                }>, je vois que tu as besoin de repos ^^ 😉 \n ${data.join(
-                  "\n"
-                )}`
-              );
-            })
-            .catch(() => {
-              msg.channel.send("Désolé, je ne trouve pas l'information");
-            });
-        default:
-          break;
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
+  const { commandName, options } = interaction;
+  if (commandName === "jourferie") {
+    await interaction.deferReply();
+    const subcommand = options.getSubcommand();
+    let message = "Désolé, je ne trouve pas l'information";
+    if (subcommand === "next") {
+      try {
+        message = await jourferie.getNext();
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (subcommand === "all") {
+      try {
+        const data = await jourferie.getAll();
+        message = `Salut <@${
+          interaction.user.id
+        }>, je vois que tu as besoin de repos ^^ 😉 \n ${data.join("\n")}`;
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (subcommand === "year") {
+      const year = options.getNumber("année");
+      try {
+        const data = await jourferie.getAll(year);
+        message = `Salut <@${
+          interaction.user.id
+        }>, je vois que tu anticipes déjà petit malin ^^ 😉  \n ${data.join(
+          "\n"
+        )}`;
+      } catch (error) {
+        console.log(error);
       }
     }
-    return jourferie
-      .getNext()
-      .then((data) => {
-        msg.channel.send(data);
-      })
-      .catch(() => {
-        msg.channel.send("Désolé, je ne trouve pas l'information");
-      });
-  }
-  if (isAnagram(msg.content, cmdRaceWeek)) {
-    return formula1.isRaceWeek().then((data) => {
-      msg.channel.send(data);
-    });
-  }
-  if (msg.content.includes("!vacances")) {
-    const [, param] = msg.content.split(" ");
-    if(param === '-clement'){
-      msg.channel.send(
-        `Salut <@${
-          msg.author.id
-        }>,\nLes prochaines vacances de Clément sont prévues pour la semaine prochaine`
-      );
-    } else {
-      msg.channel.send(
-        `Salut <@${
-          msg.author.id
-        }>,\nDes va...quoi ?`
-      );
+    await interaction.editReply(message);
+  } else if (commandName === "cafe") {
+    const subcommand = options.getSubcommand();
+    if (subcommand === "start") {
+      await interaction.deferReply();
+      const message = await cafe.start();
+      await interaction.editReply(message);
+    } else if (subcommand === "stop") {
+      await interaction.deferReply();
+      const message = await cafe.stop();
+      await interaction.editReply(message);
     }
-  }
-  if (msg.content.includes("!cafe")) {
-    const [, param] = msg.content.split(" ");
-    if(param === '-start'){
-      msg.channel.send(cafe.start());
-    } else if (param === '-stop'){
-      msg.channel.send(cafe.stop());
+  } else if (commandName === "raceweek"){
+    await interaction.deferReply()
+    try {
+      const data = await formula1.isRaceWeek()
+      await interaction.editReply(data);
+    } catch (error) {
+      await interaction.editReply("Erreur API formula 1");
     }
+  } else if (commandName === "vacances"){
+    const name = options.getString("prénom");
+    await interaction.deferReply()
+    const data = await vacances.getDateByName(name.toLowerCase())
+    await interaction.editReply(data);
   }
 });
 
-client.login(token).catch((err) => console.log(err));
+async function main() {
+  const commands = [JourFerieCommand, CafeCommand, RaceWeekCommand, VacancesCommand];
+  try {
+    console.log("Started refreshing application (/) commands.");
+    await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
+      body: commands,
+    });
+    client.login(TOKEN);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+main();
