@@ -5,16 +5,17 @@ import JourFerieCommand from "./commands/jourferie.js";
 import CafeCommand from "./commands/cafe.js";
 import RaceWeekCommand from "./commands/raceweek.js";
 import VacancesCommand from "./commands/vacances.js";
-import djCommand from "./commands/dj.js"
+import djCommand from "./commands/dj.js";
 //core
 import jourferie from "./core/jourferie.js";
 import cafe from "./core/cafe.js";
 import formula1 from "./core/formula1.js";
-import vacances from './core/vacances.js';
+import vacances from "./core/vacances.js";
+import music from "./core/music/index.js";
 
-import { createRequire } from 'module';
+import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const { TOKEN, GUILD_ID, CLIENT_ID } =  require('./config.json');
+const { TOKEN, GUILD_ID, CLIENT_ID } = require("./config.json");
 
 const rest = new REST({ version: "10" }).setToken(TOKEN);
 // Create a new client instance
@@ -23,6 +24,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildVoiceStates,
   ],
 });
 client.once("ready", () => {
@@ -69,35 +71,45 @@ client.on("interactionCreate", async (interaction) => {
     if (subcommand === "start") {
       await interaction.deferReply();
       const message = await cafe.start();
+      await music.init(interaction)
       await interaction.editReply(message);
     } else if (subcommand === "stop") {
       await interaction.deferReply();
       const message = await cafe.stop();
+      await music.delete()
       await interaction.editReply(message);
     }
-  } else if (commandName === "raceweek"){
-    await interaction.deferReply()
+  } else if (commandName === "raceweek") {
+    await interaction.deferReply();
     try {
-      const data = await formula1.isRaceWeek()
+      const data = await formula1.isRaceWeek();
       await interaction.editReply(data);
     } catch (error) {
       await interaction.editReply("Erreur API formula 1");
     }
-  } else if (commandName === "vacances"){
+  } else if (commandName === "vacances") {
     const name = options.getString("prénom");
-    await interaction.deferReply()
-    const data = await vacances.getDateByName(name.toLowerCase())
+    await interaction.deferReply();
+    const data = await vacances.getDateByName(name.toLowerCase());
     await interaction.editReply(data);
-  } else if (commandName === "fredboat"){
+  } else if (commandName === "fredboat") {
     const subcommand = options.getSubcommand();
-    if(subcommand === 'play'){
-      interaction.reply("Ce n'est pas encore fini de dev mais ça arrive !")
+    if (subcommand === "play") {
+      await interaction.deferReply()
+      //connection.destroy();
+      interaction.editReply("Ce n'est pas encore fini de dev mais ça arrive !")
     }
   }
 });
 
 async function main() {
-  const commands = [JourFerieCommand, CafeCommand, RaceWeekCommand, VacancesCommand, djCommand];
+  const commands = [
+    JourFerieCommand,
+    CafeCommand,
+    RaceWeekCommand,
+    VacancesCommand,
+    djCommand,
+  ];
   try {
     console.log("Started refreshing application (/) commands.");
     await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
