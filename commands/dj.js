@@ -32,12 +32,11 @@ export default {
       //
       const url = options.getString("url");
       if (validateUrl(url)) {
-        await interaction.deferReply();
+        interaction.reply(`Ajout de ${url} dans la liste !`);
         await music.init(interaction);
         await music.play(url);
-        interaction.editReply("Joue : " + url);
       } else {
-        interaction.editReply("Lien Youtube invalide");
+        interaction.reply("Lien Youtube invalide");
       }
     } else if (subcommand === "stop") {
       await music.delete();
