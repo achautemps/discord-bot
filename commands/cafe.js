@@ -1,7 +1,11 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import cafe from "../core/cafe.js";
+import music from "../core/music/index.js";
+
+const name = "cafe";
 
 const cafeCommand = new SlashCommandBuilder()
-  .setName("cafe")
+  .setName(name)
   .setDescription("Pour Clément et sa pause café")
   .addSubcommand((subcommand) =>
     subcommand
@@ -14,4 +18,21 @@ const cafeCommand = new SlashCommandBuilder()
       .setDescription("Retour de la pause café de Clément")
   );
 
-export default cafeCommand.toJSON();
+export default {
+  name,
+  command: cafeCommand.toJSON(),
+  execute: async (interaction) => {
+    const { options } = interaction;
+    const subcommand = options.getSubcommand();
+    await interaction.deferReply();
+    if (subcommand === "start") {
+      const message = await cafe.start();
+      await music.init(interaction);
+      await interaction.editReply(message);
+    } else if (subcommand === "stop") {
+      const message = await cafe.stop();
+      await music.delete();
+      await interaction.editReply(message);
+    }
+  },
+};

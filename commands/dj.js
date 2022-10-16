@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+const name = "fredboat";
 
 const djCommand = new SlashCommandBuilder()
-  .setName("fredboat")
+  .setName(name)
   .setDescription("Le Fredboat fait maison")
   .addSubcommand((subcommand) =>
     subcommand
@@ -14,4 +15,16 @@ const djCommand = new SlashCommandBuilder()
           .setRequired(true)
       )
   );
-export default djCommand.toJSON();
+export default {
+  name,
+  command: djCommand.toJSON(),
+  execute: async (interaction) => {
+    const { options } = interaction;
+    const subcommand = options.getSubcommand();
+    if (subcommand === "play") {
+      await interaction.deferReply();
+      //connection.destroy();
+      interaction.editReply("Ce n'est pas encore fini de dev mais ça arrive !");
+    }
+  },
+};
