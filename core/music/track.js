@@ -1,7 +1,7 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const ytdl = require("ytdl-core-discord");
-const { createAudioResource } = require("@discordjs/voice");
+const { createAudioResource, demuxProbe } = require("@discordjs/voice");
+const ytdl = require("ytdl-core");
 
 export default class Track {
   constructor(url, { onStart, onFinish, onError }) {
@@ -11,7 +11,13 @@ export default class Track {
     this.onError = onError ? onError : () => {};
   }
   async getAudioResource() {
-    const stream = await ytdl(this.url, { filter: "audioonly" });
-    return createAudioResource(stream, { metadata: this });
+    /*const stream = await ytdl(this.url, { filter: "audioonly" });
+    return createAudioResource(stream, { metadata: this });*/
+    const stream = ytdl(this.url, {
+      filter: "audioonly",
+    });
+    return createAudioResource(stream, {
+      metadata: this,
+    });
   }
 }
