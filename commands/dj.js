@@ -1,5 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-const name = "fredboat";
+import music from "../core/music/index.js";
+import { validateUrl } from "../helper/youtube.js";
+
+const name = "dj";
 
 const djCommand = new SlashCommandBuilder()
   .setName(name)
@@ -14,6 +17,9 @@ const djCommand = new SlashCommandBuilder()
           .setDescription("URL de la video")
           .setRequired(true)
       )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand.setName("stop").setDescription("Stop le son en cours")
   );
 export default {
   name,
@@ -21,10 +27,21 @@ export default {
   execute: async (interaction) => {
     const { options } = interaction;
     const subcommand = options.getSubcommand();
+
     if (subcommand === "play") {
-      await interaction.deferReply();
-      //connection.destroy();
-      interaction.editReply("Ce n'est pas encore fini de dev mais ça arrive !");
+      //
+      const url = options.getString("url");
+      if (validateUrl(url)) {
+        await interaction.deferReply();
+        await music.init(interaction);
+        await music.play(url);
+        interaction.editReply("Joue : " + url);
+      } else {
+        interaction.editReply("Lien Youtube invalide");
+      }
+    } else if (subcommand === "stop") {
+      await music.delete();
+      interaction.reply({ content: "Son coupé", ephemeral: true });
     }
   },
 };
