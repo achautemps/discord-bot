@@ -28,6 +28,7 @@ export default {
     if (subcommand === "start") {
       const message = await cafe.start();
       await music.init(interaction);
+      await music.play("https://www.youtube.com/watch?v=VBlFHuCzPgY")
       await interaction.editReply(message);
     } else if (subcommand === "stop") {
       const message = await cafe.stop();

@@ -15,11 +15,10 @@ class Music {
       console.error(
         `Error: ${error.message} with resource ${error.resource.metadata.title}`
       );
+      this.voiceConnection.disconnect();
     });
-    this.player.on(AudioPlayerStatus.Idle, (error) => {
-      console.error(
-        `LAUNCH: ${error.message} with resource ${error.resource.metadata.title}`
-      );
+    this.player.on(AudioPlayerStatus.Idle, () => {
+      this.voiceConnection.disconnect();
     });
   }
   async init(interaction) {
@@ -30,16 +29,15 @@ class Music {
       selfDeaf: false,
     });
     this.voiceConnection.subscribe(this.player);
-    this.play();
   }
 
   async delete() {
     this.voiceConnection.disconnect();
   }
 
-  async play() {
+  async play(url) {
     const track = new Track({
-      url: "https://www.youtube.com/watch?v=VBlFHuCzPgY",
+      url,
     });
     const resource = await track.getAudioResource();
     return this.player.play(resource);
